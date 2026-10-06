@@ -170,12 +170,26 @@ inline void logDlError(const char* failedCall) {
     LOC_LOGw("%s error: %s", failedCall, (nullptr == err) ? "unknown" : err);
 }
 
+void* locDlopen(const char* libName, int flags)
+{
+    static const char* const kLoadable[] = { "libgnss.so", "libloc_api_v02.so" };
+    if (nullptr != libName) {
+        for (const char* loadable : kLoadable) {
+            if (0 == strcmp(libName, loadable)) {
+                return dlopen(libName, flags);
+            }
+        }
+    }
+    LOC_LOGd("not loading %s", (nullptr == libName) ? "(null)" : libName);
+    return nullptr;
+}
+
 void* dlGetSymFromLib(void*& libHandle, const char* libName, const char* symName)
 {
     void* sym = nullptr;
     if ((nullptr != libHandle || nullptr != libName) && nullptr != symName) {
         if (nullptr == libHandle) {
-            libHandle = dlopen(libName, RTLD_NOW);
+            libHandle = locDlopen(libName, RTLD_NOW);
             if (nullptr == libHandle) {
                 logDlError("dlopen");
             }
