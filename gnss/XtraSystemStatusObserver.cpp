@@ -187,20 +187,19 @@ XtraSystemStatusObserver::XtraSystemStatusObserver(GnssAdapter* adapter,
         mGpsLock(-1), mConnections(~0), mRoaming(false), mXtraThrottle(true),
         mReqStatusReceived(false),
         mIsConnectivityStatusKnown(false),
-        mXtraSender(LocIpc::getLocIpcLocalSender(LOC_IPC_XTRA)),
-        mDgnssSender(LocIpc::getLocIpcLocalSender(LOC_IPC_DGNSS)),
+        // No XTRA or DGNSS (NTRIP) daemon is part of this build. Senders
+        // without an address open no socket and send nothing.
+        mXtraSender(LocIpc::getLocIpcLocalSender(nullptr)),
+        mDgnssSender(LocIpc::getLocIpcLocalSender(nullptr)),
         mRegisterForXtraStatus(false),
         mDelayLocTimer(*mXtraSender, *mDgnssSender) {
     subscribe(true);
 }
 
 void XtraSystemStatusObserver::init() {
-    locUtilWaitForDir(SOCKET_DIR_LOCATION);
-    auto recver = LocIpc::getLocIpcLocalRecver(
-            make_shared<XtraIpcListener>(mSystemStatusObsrvr, mMsgTask, *this),
-            LOC_IPC_HAL);
-    mIpc.startNonBlockingListening(recver);
-    mDelayLocTimer.start(100 /*.1 sec*/,  false);
+    // Not opened: the HAL's local socket (LOC_IPC_HAL), through which the XTRA
+    // and DGNSS daemons ask for status and data connections (connectBackhaul).
+    // Without it no XTRA status request arrives, so nothing is sent to them.
 }
 
 bool XtraSystemStatusObserver::updateLockStatus(GnssConfigGpsLock lock) {
