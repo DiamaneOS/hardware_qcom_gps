@@ -62,6 +62,12 @@ cc_library_shared {
     ],
 
     cflags: GNSS_CFLAGS,
+
+    // As Qualcomm's own build of this module; CFI comes from the device's
+    // CFI_INCLUDE_PATHS.
+    sanitize: {
+        integer_overflow: true,
+    },
 }
 
 cc_binary {
@@ -97,4 +103,10 @@ cc_binary {
     ],
 
     cflags: GNSS_CFLAGS,
+
+    // As Qualcomm's own build of this module; CFI comes from the device's
+    // CFI_INCLUDE_PATHS.
+    sanitize: {
+        integer_overflow: true,
+    },
 }
