@@ -294,7 +294,7 @@ LBSProxyBase* ContextBase::getLBSProxy(const char* libName)
 {
     LBSProxyBase* proxy = NULL;
     LOC_LOGD("%s:%d]: getLBSProxy libname: %s\n", __func__, __LINE__, libName);
-    void* lib = dlopen(libName, RTLD_NOW);
+    void* lib = locDlopen(libName, RTLD_NOW);
 
     if ((void*)NULL != lib) {
         getLBSProxy_t* getter = (getLBSProxy_t*)dlsym(lib, "getLBSProxy");
@@ -328,7 +328,7 @@ LocApiBase* ContextBase::createLocApi(LOC_API_ADAPTER_EVENT_MASK_T exMask)
                 libname = SLL_LOC_API_LIB_NAME;
             }
 
-            if ((handle = dlopen(libname, RTLD_NOW)) != NULL) {
+            if ((handle = locDlopen(libname, RTLD_NOW)) != NULL) {
                 LOC_LOGD("%s:%d]: %s is present", __func__, __LINE__, libname);
                 getLocApi_t* getter = (getLocApi_t*) dlsym(handle, "getLocApi");
                 if (getter != NULL) {
@@ -341,7 +341,7 @@ LocApiBase* ContextBase::createLocApi(LOC_API_ADAPTER_EVENT_MASK_T exMask)
             else {
                 LOC_LOGD("%s:%d]: libloc_api_v02.so is NOT present. Trying RPC",
                         __func__, __LINE__);
-                handle = dlopen("libloc_api-rpc-qc.so", RTLD_NOW);
+                handle = locDlopen("libloc_api-rpc-qc.so", RTLD_NOW);
                 if (NULL != handle) {
                     getLocApi_t* getter = (getLocApi_t*) dlsym(handle, "getLocApi");
                     if (NULL != getter) {

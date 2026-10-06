@@ -163,6 +163,22 @@ SIDE EFFECTS
 void* dlGetSymFromLib(void*& libHandle, const char* libName, const char* symName);
 
 /*===========================================================================
+FUNCTION locDlopen
+
+DESCRIPTION
+   dlopen() for the location libraries, limited to the libraries this HAL
+   ships: the GNSS adapter (libgnss.so) and the QMI LOC API
+   (libloc_api_v02.so). Every other name, such as Qualcomm's IZat, XTRA,
+   NTRIP/DGNSS, engine hub, diagnostic, network interface, batching and
+   geofence libraries, is refused without calling dlopen().
+
+RETURN VALUE
+   The handle from dlopen(), or nullptr if the library is refused or
+   cannot be opened.
+===========================================================================*/
+void* locDlopen(const char* libName, int flags);
+
+/*===========================================================================
 FUNCTION getQTimerTickCount
 
 DESCRIPTION

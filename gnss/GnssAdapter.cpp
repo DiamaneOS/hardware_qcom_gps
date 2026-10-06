@@ -8298,7 +8298,7 @@ GnssAdapter::initLocGlinkProxy() {
         // load the location glink .so, if the .so is not present
         // all location link calls will turn into no-op.
         void *handle = nullptr;
-        if ((handle = dlopen("libloc_glink.so", RTLD_NOW)) == nullptr) {
+        if ((handle = locDlopen("libloc_glink.so", RTLD_NOW)) == nullptr) {
             if ((error = dlerror()) != nullptr) {
                 LOC_LOGe("libloc_glink.so not found %s !", error);
             }
@@ -8415,7 +8415,7 @@ GnssAdapter::initEngHubProxy() {
         // load the engine hub .so, if the .so is not present
         // all EngHubProxyBase calls will turn into no-op.
         void *handle = nullptr;
-        if ((handle = dlopen("libloc_eng_hub.so", RTLD_NOW)) == nullptr) {
+        if ((handle = locDlopen("libloc_eng_hub.so", RTLD_NOW)) == nullptr) {
             if ((error = dlerror()) != nullptr) {
                 LOC_LOGe("libloc_eng_hub.so not found %s !", error);
             }
