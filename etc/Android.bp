@@ -1,11 +1,5 @@
-
-prebuilt_etc {
-
-    name: "gps.conf",
-    vendor: true,
-    src: "gps.conf",
-}
-
+// gps.conf is not built here: the device installs its own (Fairphone's stock file
+// with pinned edits) at the same path.
 prebuilt_etc {
 
     name: "batching.conf",
