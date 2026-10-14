@@ -62,6 +62,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "loc_misc_utils.h"
 #include "LocationUtil.h"
 #include "GnssConfiguration.h"
+#include "GnssPsds.h"
 #include "AGnssRil.h"
 #include "AGnss.h"
 #include "GnssGeofence.h"
@@ -177,6 +178,15 @@ ILocationControlAPI* Gnss::getLocationControlApi() {
 ScopedAStatus Gnss::updateConfiguration(GnssConfig& gnssConfig) {
     ENTRY_LOG_CALLFLOW();
     mApi.gnssConfigurationUpdate(gnssConfig);
+    return ScopedAStatus::ok();
+}
+
+ScopedAStatus Gnss::getExtensionPsds(shared_ptr<IGnssPsds>* _aidl_return) {
+    ENTRY_LOG_CALLFLOW();
+    if (mGnssPsds == nullptr) {
+        mGnssPsds = SharedRefBase::make<GnssPsds>();
+    }
+    *_aidl_return = mGnssPsds;
     return ScopedAStatus::ok();
 }
 

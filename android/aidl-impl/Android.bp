@@ -11,6 +11,7 @@ cc_library_shared {
     srcs: [
         "Gnss.cpp",
         "GnssConfiguration.cpp",
+        "GnssPsds.cpp",
         "GnssPowerIndication.cpp",
         "GnssMeasurementInterface.cpp",
         "GnssBatching.cpp",
