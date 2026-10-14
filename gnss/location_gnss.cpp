@@ -128,6 +128,8 @@ static uint32_t configOsnmaEnablement(bool enable);
 static uint32_t getXtraStatus();
 static uint32_t registerXtraStatusUpdate(bool registerUpdate);
 static void configPrecisePositioning(uint32_t featureId, bool enable, const std::string& appHash);
+static void setXtraDataRequestCb(const std::function<void()>& xtraDataRequestCb);
+static void injectXtraData(const std::vector<uint8_t>& data);
 
 static const GnssInterface gGnssInterface = {
     sizeof(GnssInterface),
@@ -201,6 +203,8 @@ static const GnssInterface gGnssInterface = {
     configPrecisePositioning,
     configMerkleTree,
     configOsnmaEnablement,
+    setXtraDataRequestCb,
+    injectXtraData,
 };
 
 #ifndef DEBUG_X86
@@ -766,5 +770,17 @@ static uint32_t configOsnmaEnablement(bool enable) {
 #endif
     } else {
         return 0;
+    }
+}
+
+static void setXtraDataRequestCb(const std::function<void()>& xtraDataRequestCb) {
+    if (NULL != gGnssAdapter) {
+        gGnssAdapter->setXtraDataRequestCbCommand(xtraDataRequestCb);
+    }
+}
+
+static void injectXtraData(const std::vector<uint8_t>& data) {
+    if (NULL != gGnssAdapter) {
+        gGnssAdapter->injectXtraDataCommand(data);
     }
 }

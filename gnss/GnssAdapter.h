@@ -313,6 +313,8 @@ class GnssAdapter : public LocAdapterBase {
     void odcpiTimerExpire();
 
     std::function<void(const Location&)> mAddressRequestCb;
+    /* ==== XTRA data from the framework (IGnssPsds) ====================================== */
+    std::function<void()> mXtraDataRequestCb;
     /* ==== Emergency Status =============================================================== */
     std::function<void(bool)> mEsStatusCb;
 
@@ -601,6 +603,8 @@ public:
     void injectOdcpiCommand(const Location& location);
     void setAddressRequestCbCommand(const std::function<void(const Location&)>& addressRequestCb);
     void injectLocationAndAddrCommand(const Location& location, const GnssCivicAddress& addr);
+    void setXtraDataRequestCbCommand(const std::function<void()>& xtraDataRequestCb);
+    void injectXtraDataCommand(const std::vector<uint8_t>& data);
     /* ======== RESPONSES ================================================================== */
     void reportResponse(LocationError err, uint32_t sessionId);
     void reportResponse(size_t count, LocationError* errs, uint32_t* ids);
@@ -674,6 +678,7 @@ public:
                             SubId sub_id=DEFAULT_SUB);
     virtual bool releaseATL(int connHandle);
     virtual bool requestOdcpiEvent(OdcpiRequestInfo& request);
+    virtual bool requestXtraData() override;
     virtual bool reportDeleteAidingDataEvent(GnssAidingData& aidingData);
     virtual bool reportKlobucharIonoModelEvent(GnssKlobucharIonoModel& ionoModel);
     virtual bool reportGnssAdditionalSystemInfoEvent(

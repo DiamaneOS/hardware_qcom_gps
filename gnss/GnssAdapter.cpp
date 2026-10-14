@@ -3036,6 +3036,10 @@ GnssAdapter::updateClientsEventMask()
     if (nullptr != mControlCallbacks.odcpiReqCb) {
         mask |= LOC_API_ADAPTER_BIT_REQUEST_WIFI;
     }
+    // XTRA data requests from the engine, forwarded to the framework
+    if (nullptr != mXtraDataRequestCb) {
+        mask |= LOC_API_ADAPTER_BIT_ASSISTANCE_DATA_REQUEST;
+    }
 
     // need to register for leap second info
     // for proper nmea generation
@@ -6218,6 +6222,57 @@ void GnssAdapter::injectLocationAndAddrCommand(
         }
     };
     sendMsg(new MsgInjectLocAndAddr(*this, location, addr));
+}
+
+// The framework downloads XTRA data (PSDS) when the engine asks for it and injects it here.
+void GnssAdapter::setXtraDataRequestCbCommand(const std::function<void()>& xtraDataRequestCb)
+{
+    struct MsgSetXtraDataRequestCb : public LocMsg {
+        GnssAdapter& mAdapter;
+        std::function<void()> mCb;
+        inline MsgSetXtraDataRequestCb(GnssAdapter& adapter,
+                const std::function<void()>& cb) :
+            LocMsg(), mAdapter(adapter), mCb(cb) {}
+        inline virtual void proc() const {
+            mAdapter.mXtraDataRequestCb = mCb;
+            mAdapter.updateEvtMask(LOC_API_ADAPTER_BIT_ASSISTANCE_DATA_REQUEST,
+                    (nullptr != mCb) ? LOC_REGISTRATION_MASK_ENABLED :
+                    LOC_REGISTRATION_MASK_DISABLED);
+        }
+    };
+    sendMsg(new MsgSetXtraDataRequestCb(*this, xtraDataRequestCb));
+}
+
+void GnssAdapter::injectXtraDataCommand(const std::vector<uint8_t>& data)
+{
+    struct MsgInjectXtraData : public LocMsg {
+        GnssAdapter& mAdapter;
+        std::vector<uint8_t> mData;
+        inline MsgInjectXtraData(GnssAdapter& adapter, const std::vector<uint8_t>& data) :
+            LocMsg(), mAdapter(adapter), mData(data) {}
+        inline virtual void proc() const {
+            mAdapter.mLocApi->injectXtraData(mData);
+        }
+    };
+    sendMsg(new MsgInjectXtraData(*this, data));
+}
+
+// Called by the LocApi when the engine asks for XTRA data
+bool GnssAdapter::requestXtraData()
+{
+    struct MsgRequestXtraData : public LocMsg {
+        GnssAdapter& mAdapter;
+        inline MsgRequestXtraData(GnssAdapter& adapter) :
+            LocMsg(), mAdapter(adapter) {}
+        inline virtual void proc() const {
+            if (nullptr != mAdapter.mXtraDataRequestCb) {
+                LOC_LOGi("XTRA data requested by the engine");
+                mAdapter.mXtraDataRequestCb();
+            }
+        }
+    };
+    sendMsg(new MsgRequestXtraData(*this));
+    return true;
 }
 
 // Called in the context of LocTimer thread

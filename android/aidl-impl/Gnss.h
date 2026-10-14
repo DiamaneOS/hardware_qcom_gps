@@ -90,9 +90,7 @@ struct Gnss : public BnGnss {
 
     ScopedAStatus setCallback(const shared_ptr<IGnssCallback>& callback) override;
     ScopedAStatus close() override;
-    ScopedAStatus getExtensionPsds(shared_ptr<IGnssPsds>* _aidl_return) {
-        return ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
-    }
+    ScopedAStatus getExtensionPsds(shared_ptr<IGnssPsds>* _aidl_return) override;
     ScopedAStatus getExtensionGnssConfiguration(
             shared_ptr<IGnssConfiguration>* _aidl_return) override;
     ScopedAStatus getExtensionGnssPowerIndication(
@@ -141,6 +139,7 @@ struct Gnss : public BnGnss {
     inline bool isGnssCbValid() {return mGnssCallback != nullptr; };
 private:
     GnssAPIClient mApi;
+    shared_ptr<IGnssPsds> mGnssPsds = nullptr;
     shared_ptr<IGnssConfiguration> mGnssConfiguration = nullptr;
     shared_ptr<IGnssPowerIndication> mGnssPowerIndication = nullptr;
     shared_ptr<IGnssMeasurementInterface> mGnssMeasurementInterface = nullptr;
