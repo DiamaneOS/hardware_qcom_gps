@@ -722,6 +722,10 @@ void LocApiBase::
 DEFAULT_IMPL()
 
 void LocApiBase::
+    injectXtraData(const std::vector<uint8_t>& /*data*/)
+DEFAULT_IMPL()
+
+void LocApiBase::
     setTime(LocGpsUtcTime /*time*/, int64_t /*timeReference*/, int /*uncertainty*/)
 DEFAULT_IMPL()
 
