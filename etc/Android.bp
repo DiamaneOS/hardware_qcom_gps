@@ -1,5 +1,5 @@
-// gps.conf is not built here: the device installs its own (Fairphone's stock file
-// with pinned edits) at the same path.
+// gps.conf is not built here: the device installs its own (the device maker's stock
+// file with pinned edits) at the same path.
 prebuilt_etc {
 
     name: "batching.conf",
